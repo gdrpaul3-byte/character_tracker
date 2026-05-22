@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>한서윤 통계 대시보드</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: oklch(15% 0.018 225);
+      --surface: oklch(20% 0.024 225);
+      --surface-2: oklch(24% 0.028 225);
+      --line: oklch(38% 0.04 225);
+      --text: oklch(93% 0.018 84);
+      --muted: oklch(73% 0.035 220);
+      --soft: oklch(62% 0.045 220);
+      --teal: oklch(76% 0.14 178);
+      --amber: oklch(79% 0.15 82);
+      --coral: oklch(72% 0.17 32);
+      --blue: oklch(70% 0.13 238);
+      --shadow: 0 24px 70px oklch(8% 0.02 225 / 45%);
+      --radius: 8px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 24px;
+      --space-2xl: 32px;
+      --space-3xl: 48px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, oklch(18% 0.035 215) 0%, transparent 38%),
+        linear-gradient(315deg, oklch(18% 0.04 35) 0%, transparent 34%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Pretendard", "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(24px, 5vw, 56px) 0;
+      display: grid;
+      gap: var(--space-2xl);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+      gap: var(--space-xl);
+      align-items: end;
+    }
+
+    .eyebrow {
+      margin: 0 0 var(--space-md);
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 7vw, 5.75rem);
+      line-height: 0.92;
+      letter-spacing: 0;
+      font-weight: 900;
+    }
+
+    .subtitle {
+      max-width: 58ch;
+      margin: var(--space-lg) 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .status {
+      background: color-mix(in oklch, var(--surface) 88%, var(--teal));
+      border: 1px solid color-mix(in oklch, var(--line), var(--teal) 22%);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--space-xl);
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .status-title {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .status-value {
+      margin: 0;
+      font-size: 1.85rem;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .status-meta {
+      margin: 0;
+      color: var(--soft);
+      font-size: 0.88rem;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .metric,
+    .chart-panel {
+      background: color-mix(in oklch, var(--surface) 92%, var(--bg));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 18px 46px oklch(9% 0.025 225 / 26%);
+    }
+
+    .metric {
+      min-height: 116px;
+      padding: var(--space-lg);
+      display: grid;
+      align-content: space-between;
+      gap: var(--space-lg);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .metric strong {
+      font-size: clamp(1.6rem, 3vw, 2.35rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.85fr);
+      gap: var(--space-xl);
+    }
+
+    .chart-panel {
+      min-height: 410px;
+      padding: var(--space-xl);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: var(--space-lg);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .panel-head p {
+      margin: var(--space-xs) 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      border: 1px solid color-mix(in oklch, var(--line), var(--amber) 30%);
+      border-radius: 999px;
+      color: var(--amber);
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .chart-wrap {
+      position: relative;
+      min-height: 310px;
+    }
+
+    .empty {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      min-height: 220px;
+      place-items: center;
+      text-align: center;
+      padding: var(--space-xl);
+    }
+
+    .error {
+      display: none;
+      background: color-mix(in oklch, var(--surface-2) 84%, var(--coral));
+      border: 1px solid color-mix(in oklch, var(--line), var(--coral) 42%);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: var(--space-lg);
+    }
+
+    footer {
+      color: var(--soft);
+      font-size: 0.82rem;
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .charts {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      main {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-head {
+        flex-direction: column;
+      }
+
+      .chart-panel {
+        min-height: 360px;
+        padding: var(--space-lg);
+      }
+
+      .chart-wrap {
+        min-height: 260px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">CRACK 캐릭터 추적</p>
+        <h1 id="page-title">한서윤</h1>
+        <p class="subtitle">제작자 헌혈의 캐릭터 지표를 CSV 이력과 최신 JSON에서 불러와 시간 흐름대로 보여줍니다.</p>
+      </div>
+      <aside class="status" aria-label="최신 상태">
+        <p class="status-title">최신 수집 상태</p>
+        <p class="status-value" id="latest-title">데이터 불러오는 중</p>
+        <p class="status-meta" id="latest-meta">data/hanseo_yun_latest.json</p>
+      </aside>
+    </section>
+
+    <section class="metrics" aria-label="주요 지표">
+      <div class="metric">
+        <span>누적 메시지</span>
+        <strong id="metric-messages">-</strong>
+      </div>
+      <div class="metric">
+        <span>좋아요</span>
+        <strong id="metric-likes">-</strong>
+      </div>
+      <div class="metric">
+        <span>댓글</span>
+        <strong id="metric-comments">-</strong>
+      </div>
+      <div class="metric">
+        <span>이미지</span>
+        <strong id="metric-images">-</strong>
+      </div>
+    </section>
+
+    <div class="error" id="error-box" role="alert"></div>
+
+    <section class="charts" aria-label="통계 차트">
+      <article class="chart-panel">
+        <div class="panel-head">
+          <div>
+            <h2>메시지 증가 추이</h2>
+            <p>totalMessageCount 시간별 변화</p>
+          </div>
+          <span class="badge" id="row-count">0개 기록</span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="message-chart" aria-label="누적 메시지 라인 차트"></canvas>
+          <div class="empty" id="message-empty">표시할 메시지 데이터가 없습니다.</div>
+        </div>
+      </article>
+
+      <article class="chart-panel">
+        <div class="panel-head">
+          <div>
+            <h2>반응 지표</h2>
+            <p>likeCount와 commentCount 비교</p>
+          </div>
+          <span class="badge">최신값</span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="reaction-chart" aria-label="좋아요와 댓글 막대 차트"></canvas>
+          <div class="empty" id="reaction-empty">표시할 반응 데이터가 없습니다.</div>
+        </div>
+      </article>
+    </section>
+
+    <footer id="updated-at">마지막 업데이트 확인 중</footer>
+  </main>
+
+  <script>
+    const numberFormatter = new Intl.NumberFormat("ko-KR");
+    const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    const chartTextColor = "oklch(82% 0.025 220)";
+    const chartGridColor = "oklch(38% 0.04 225 / 45%)";
+
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/).filter(Boolean);
+      if (lines.length < 2) return [];
+
+      return lines.slice(1).map((line) => {
+        const columns = line.split(",");
+        const date = columns[0];
+        const time = columns[1];
+        const totalMessageCount = Number(columns[2]);
+        const likeCount = Number(columns[3]);
+        const commentCount = Number(columns[4]);
+        const imageCount = Number(columns[5]);
+        const observedAt = new Date(`${date}T${time}`);
+
+        return {
+          date,
+          time,
+          observedAt,
+          totalMessageCount,
+          likeCount,
+          commentCount,
+          imageCount
+        };
+      }).filter((row) => (
+        row.date &&
+        row.time &&
+        Number.isFinite(row.totalMessageCount) &&
+        Number.isFinite(row.likeCount) &&
+        Number.isFinite(row.commentCount)
+      ));
+    }
+
+    function formatNumber(value) {
+      return Number.isFinite(Number(value)) ? numberFormatter.format(Number(value)) : "-";
+    }
+
+    function formatDate(value) {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? "-" : dateFormatter.format(date);
+    }
+
+    function setText(id, text) {
+      document.getElementById(id).textContent = text;
+    }
+
+    function showError(message) {
+      const errorBox = document.getElementById("error-box");
+      errorBox.textContent = message;
+      errorBox.style.display = "block";
+    }
+
+    function getLatestRow(rows, latest) {
+      if (latest && Number.isFinite(Number(latest.totalMessageCount))) return latest;
+      return rows.at(-1) || {};
+    }
+
+    function buildMessageChart(rows) {
+      const canvas = document.getElementById("message-chart");
+      const empty = document.getElementById("message-empty");
+
+      if (!rows.length) {
+        canvas.style.display = "none";
+        empty.style.display = "grid";
+        return;
+      }
+
+      new Chart(canvas, {
+        type: "line",
+        data: {
+          labels: rows.map((row) => formatDate(row.observedAt)),
+          datasets: [{
+            label: "누적 메시지",
+            data: rows.map((row) => row.totalMessageCount),
+            borderColor: "oklch(76% 0.14 178)",
+            backgroundColor: "oklch(76% 0.14 178 / 16%)",
+            pointBackgroundColor: "oklch(79% 0.15 82)",
+            pointBorderColor: "oklch(15% 0.018 225)",
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.32
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: chartTextColor, boxWidth: 12, boxHeight: 12 }
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => ` ${formatNumber(context.parsed.y)}개`
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: chartTextColor, maxRotation: 0, autoSkip: true },
+              grid: { color: chartGridColor }
+            },
+            y: {
+              beginAtZero: false,
+              ticks: {
+                color: chartTextColor,
+                callback: (value) => formatNumber(value)
+              },
+              grid: { color: chartGridColor }
+            }
+          }
+        }
+      });
+    }
+
+    function buildReactionChart(latest) {
+      const canvas = document.getElementById("reaction-chart");
+      const empty = document.getElementById("reaction-empty");
+      const likes = Number(latest.likeCount);
+      const comments = Number(latest.commentCount);
+
+      if (!Number.isFinite(likes) && !Number.isFinite(comments)) {
+        canvas.style.display = "none";
+        empty.style.display = "grid";
+        return;
+      }
+
+      new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: ["좋아요", "댓글"],
+          datasets: [{
+            label: "반응 수",
+            data: [likes || 0, comments || 0],
+            backgroundColor: ["oklch(79% 0.15 82 / 88%)", "oklch(72% 0.17 32 / 86%)"],
+            borderColor: ["oklch(82% 0.15 82)", "oklch(75% 0.17 32)"],
+            borderWidth: 1,
+            borderRadius: 6,
+            maxBarThickness: 80
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => ` ${formatNumber(context.parsed.y)}개`
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: chartTextColor, font: { weight: 700 } },
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: chartTextColor,
+                precision: 0,
+                callback: (value) => formatNumber(value)
+              },
+              grid: { color: chartGridColor }
+            }
+          }
+        }
+      });
+    }
+
+    async function loadDashboard() {
+      try {
+        const [csvResponse, latestResponse] = await Promise.all([
+          fetch("data/hanseo_yun_stats.csv", { cache: "no-store" }),
+          fetch("data/hanseo_yun_latest.json", { cache: "no-store" })
+        ]);
+
+        if (!csvResponse.ok) throw new Error("CSV 파일을 불러오지 못했습니다.");
+        if (!latestResponse.ok) throw new Error("JSON 파일을 불러오지 못했습니다.");
+
+        const [csvText, latest] = await Promise.all([
+          csvResponse.text(),
+          latestResponse.json()
+        ]);
+
+        const rows = parseCsv(csvText);
+        const current = getLatestRow(rows, latest);
+        const characterName = latest.characterName || "한서윤";
+        const creator = latest.creatorNickname || "헌혈";
+
+        document.title = `${characterName} 통계 대시보드`;
+        setText("page-title", characterName);
+        setText("latest-title", `${characterName} · ${creator}`);
+        setText("latest-meta", latest.simpleDescription || "최신 캐릭터 상태");
+        setText("metric-messages", formatNumber(current.totalMessageCount));
+        setText("metric-likes", formatNumber(current.likeCount));
+        setText("metric-comments", formatNumber(current.commentCount));
+        setText("metric-images", formatNumber(current.imageCount));
+        setText("row-count", `${numberFormatter.format(rows.length)}개 기록`);
+        setText("updated-at", `마지막 수집: ${formatDate(latest.timestamp || rows.at(-1)?.observedAt)}`);
+
+        buildMessageChart(rows);
+        buildReactionChart(current);
+      } catch (error) {
+        showError(`${error.message} 로컬 파일로 직접 열었다면 fetch가 차단될 수 있습니다. 프로젝트 루트에서 간단한 정적 서버로 실행해 주세요.`);
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
