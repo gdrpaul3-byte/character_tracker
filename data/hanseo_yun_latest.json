@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-05-27T06:01:01.463256+09:00",
+  "timestamp": "2026-05-28T06:00:48.749134+09:00",
   "characterId": "6a0cdd99c0cf573be43391fc",
   "characterName": "한서윤",
   "creatorNickname": "헌혈",
   "simpleDescription": "문을 잠갔는데 반장이 또 들어왔다",
-  "totalMessageCount": 1076,
+  "totalMessageCount": 1085,
   "likeCount": 9,
   "commentCount": 5,
   "imageCount": 3,
@@ -19,7 +19,7 @@
   "target": "male",
   "status": "active",
   "createdAt": "2026-05-19T23:30:21.331Z",
-  "updatedAt": "2026-05-25T13:41:05.969Z",
+  "updatedAt": "2026-05-27T12:53:21.537Z",
   "version": 3,
   "releasedAt": "2026-05-21T02:30:32.934Z",
   "url": "https://crack.wrtn.ai/characters/6a0cdd99c0cf573be43391fc/detail"
