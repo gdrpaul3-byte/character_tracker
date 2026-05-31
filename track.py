@@ -23,11 +23,13 @@ CHARACTER_NAME = "한서윤"
 CREATOR_NAME = "헌혈"
 
 # 랭킹 페이지 설정
+# crack.wrtn.ai의 캐릭터 탭은 sort 쿼리가 아니라 pageId 쿼리로 장르/랭킹 탭을
+# 전환한다. sort 쿼리를 쓰면 추천 기본 페이지가 열려 잘못된 순위를 계산할 수 있다.
 RANKING_PAGES = [
-    {"name": "신작 랭킹", "url": "https://crack.wrtn.ai/characters?sort=new-ranking"},
-    {"name": "남성 인기", "url": "https://crack.wrtn.ai/characters?sort=male-popular"},
-    {"name": "로맨스", "url": "https://crack.wrtn.ai/characters?sort=romance"},
-    {"name": "일상/현대", "url": "https://crack.wrtn.ai/characters?sort=daily"},
+    {"name": "신작 랭킹", "url": "https://crack.wrtn.ai/characters?pageId=68f60e486fe4e8b1739f6ff0"},
+    {"name": "남성 인기", "url": "https://crack.wrtn.ai/characters?pageId=682c89c39d1325983179b661"},
+    {"name": "로맨스", "url": "https://crack.wrtn.ai/characters?pageId=682c89c39d1325983179b665"},
+    {"name": "일상/현대", "url": "https://crack.wrtn.ai/characters?pageId=682c89c39d1325983179b66d"},
 ]
 
 # 경로
@@ -36,57 +38,70 @@ DATA_DIR = PROJECT_DIR / "data"
 CSV_PATH = DATA_DIR / "hanseo_yun_stats.csv"
 LATEST_PATH = DATA_DIR / "hanseo_yun_latest.json"
 
+CSV_FIELDS = [
+    "date",
+    "time",
+    "totalMessageCount",
+    "likeCount",
+    "commentCount",
+    "imageCount",
+    "version",
+    "releasedAt",
+]
+
 # 데이터 디렉토리 생성
 DATA_DIR.mkdir(exist_ok=True)
 
 
-def find_rank_in_page(page, ranking_name: str, character_name: str, max_scroll: int = 5) -> dict | None:
-    """현재 페이지에서 캐릭터 이름을 찾아 순위를 반환합니다."""
-    for scroll_count in range(max_scroll):
-        # 페이지에서 캐릭터 이름이 포함된 요소 찾기
-        result = page.evaluate(f"""
-            () => {{
-                const characterName = '{character_name}';
-                // 모든 텍스트 노드에서 캐릭터 이름 찾기
-                const allElements = document.querySelectorAll('*');
-                for (const el of allElements) {{
-                    if (el.textContent.trim() === characterName && el.children.length === 0) {{
-                        // 부모 카드 찾기 (여러 레벨 위로)
-                        let card = el;
-                        for (let i = 0; i < 5; i++) {{
-                            card = card?.parentElement;
-                            if (!card) break;
-                        }}
-                        if (card) {{
-                            // 같은 레벨의 형제 요소들 찾기
-                            const parent = card.parentElement;
-                            if (!parent) continue;
-                            const siblings = Array.from(parent.children);
-                            const idx = siblings.indexOf(card);
-                            return {{
-                                found: true,
-                                index: idx + 1,
-                                total: siblings.length
-                            }};
-                        }}
-                    }}
-                }}
-                return {{ found: false }};
-            }}
-        """)
-        
-        if result and result.get("found"):
-            return {
-                "ranking_name": ranking_name,
-                "rank": result.get("index", 0),
-                "total": result.get("total", 0),
+def find_rank_in_page(page, ranking_name: str, character_id: str, max_scroll: int = 5) -> dict | None:
+    """현재 랭킹 페이지의 __NEXT_DATA__에서 추적 대상 캐릭터 ID의 순위를 반환합니다.
+
+    같은 이름의 다른 캐릭터가 여러 개 있을 수 있으므로 이름 텍스트가 아니라
+    CHARACTER_ID로만 매칭한다. DOM 부모/형제 위치 기반 계산은 추천/캐러셀 섹션까지
+    섞여 1위로 오판할 수 있어 사용하지 않는다.
+    """
+    result = page.evaluate(
+        """
+        (characterId) => {
+            const nextDataEl = document.getElementById('__NEXT_DATA__');
+            if (!nextDataEl) return { found: false, reason: 'no_next_data' };
+
+            const data = JSON.parse(nextDataEl.textContent);
+            const fallback = data?.props?.pageProps?.fallback || {};
+            const pageKey = Object.keys(fallback).find((key) => key.startsWith('/pages/'));
+            const sections = pageKey ? (fallback[pageKey]?.data?.sections || []) : [];
+
+            for (const section of sections) {
+                const items = section.items || [];
+                const index = items.findIndex((item) => {
+                    const nested = item.character || {};
+                    return item._id === characterId || item.id === characterId ||
+                        item.characterId === characterId || nested._id === characterId ||
+                        nested.id === characterId || nested.characterId === characterId;
+                });
+                if (index >= 0) {
+                    return {
+                        found: true,
+                        index: index + 1,
+                        total: items.length,
+                        section_title: section.title || section.name || ''
+                    };
+                }
             }
-        
-        # 스크롤 다운
-        if scroll_count < max_scroll - 1:
-            page.evaluate("window.scrollBy(0, window.innerHeight)")
-            time.sleep(1)
-    
+            return { found: false, total: sections.reduce((sum, section) => sum + ((section.items || []).length), 0) };
+        }
+        """,
+        character_id,
+    )
+
+    if result and result.get("found"):
+        return {
+            "ranking_name": ranking_name,
+            "rank": result.get("index", 0),
+            "total": result.get("total", 0),
+            "section_title": result.get("section_title", ""),
+        }
+
     return None
 
 
@@ -145,10 +160,10 @@ def fetch_all_data():
             for rp in RANKING_PAGES:
                 print(f"  [{rp['name']}] 랭킹 확인 중...")
                 try:
-                    page.goto(rp["url"], wait_until="networkidle", timeout=30000)
-                    time.sleep(1)
+                    page.goto(rp["url"], wait_until="domcontentloaded", timeout=30000)
+                    time.sleep(2)
                     
-                    rank_info = find_rank_in_page(page, rp["name"], CHARACTER_NAME)
+                    rank_info = find_rank_in_page(page, rp["name"], CHARACTER_ID)
                     if rank_info:
                         print(f"    → {rank_info['rank']}위 발견!")
                         rankings.append(rank_info)
@@ -163,9 +178,38 @@ def fetch_all_data():
             browser.close()
 
 
+def normalize_csv_row(row: dict) -> dict:
+    """구버전 CSV(헤더에 version/releasedAt 누락)에서 밀려난 값을 복구합니다."""
+    normalized = {field: row.get(field, "") for field in CSV_FIELDS}
+    extras = row.get(None) or []
+    if not normalized.get("version") and len(extras) >= 1:
+        normalized["version"] = extras[0]
+    if not normalized.get("releasedAt") and len(extras) >= 2:
+        normalized["releasedAt"] = extras[1]
+    return normalized
+
+
+def migrate_csv_if_needed():
+    """CSV 헤더가 오래되어 version/releasedAt이 빠졌으면 안전하게 보정합니다."""
+    if not CSV_PATH.exists():
+        return
+
+    with open(CSV_PATH, "r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f, restkey=None)
+        if reader.fieldnames == CSV_FIELDS:
+            return
+        rows = [normalize_csv_row(row) for row in reader]
+
+    with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def save_to_csv(stats: dict):
     """통계를 CSV 파일에 추가합니다."""
     now = datetime.now(KST)
+    migrate_csv_if_needed()
     
     # 업데이트 정보 추출
     update_info = stats.get("updateInfo") or {}
@@ -184,7 +228,7 @@ def save_to_csv(stats: dict):
     file_exists = CSV_PATH.exists()
     
     with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=row.keys())
+        writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
         if not file_exists:
             writer.writeheader()
         writer.writerow(row)
@@ -231,11 +275,12 @@ def get_previous_stats() -> dict | None:
     if not CSV_PATH.exists():
         return None
     
-    with open(CSV_PATH, "r", encoding="utf-8") as f:
-        reader = list(csv.DictReader(f))
-        if not reader:
+    with open(CSV_PATH, "r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f, restkey=None)
+        rows = [normalize_csv_row(row) for row in reader]
+        if not rows:
             return None
-        return reader[-1]
+        return rows[-1]
 
 
 def format_report(stats: dict, rankings: list = None, prev: dict = None) -> str:
