@@ -7,20 +7,20 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: oklch(14% 0.018 250);
-      --surface: oklch(19% 0.022 250);
-      --surface-2: oklch(24% 0.026 250);
-      --surface-3: oklch(29% 0.032 250);
-      --line: oklch(39% 0.04 250);
-      --text: oklch(93% 0.014 86);
-      --muted: oklch(74% 0.032 245);
-      --soft: oklch(61% 0.04 245);
-      --mint: oklch(76% 0.13 165);
-      --gold: oklch(80% 0.13 84);
-      --rose: oklch(70% 0.16 24);
-      --violet: oklch(70% 0.13 302);
-      --sky: oklch(72% 0.12 228);
+      color-scheme: light;
+      --bg: oklch(98% 0.006 250);
+      --surface: oklch(100% 0 0);
+      --surface-2: oklch(96% 0.012 250);
+      --surface-3: oklch(92% 0.018 250);
+      --line: oklch(86% 0.018 250);
+      --text: oklch(22% 0.032 250);
+      --muted: oklch(43% 0.034 250);
+      --soft: oklch(55% 0.035 250);
+      --mint: oklch(54% 0.14 164);
+      --gold: oklch(64% 0.14 78);
+      --rose: oklch(58% 0.18 26);
+      --violet: oklch(52% 0.16 302);
+      --sky: oklch(55% 0.14 236);
       --radius: 8px;
       --space-xs: 4px;
       --space-sm: 8px;
@@ -39,9 +39,8 @@
       margin: 0;
       min-height: 100vh;
       background:
-        linear-gradient(125deg, oklch(18% 0.04 260) 0%, transparent 42%),
-        linear-gradient(305deg, oklch(17% 0.035 24) 0%, transparent 36%),
-        var(--bg);
+        radial-gradient(circle at 8% 0%, oklch(93% 0.035 226 / 78%) 0 240px, transparent 420px),
+        linear-gradient(180deg, oklch(100% 0 0) 0%, var(--bg) 42%, oklch(96% 0.012 250) 100%);
       color: var(--text);
       font-family: "Pretendard", "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
       line-height: 1.6;
@@ -93,7 +92,7 @@
     .nav-links a:hover {
       border-color: color-mix(in oklch, var(--line), var(--mint) 44%);
       color: var(--text);
-      background: color-mix(in oklch, var(--surface-2) 78%, var(--mint));
+      background: color-mix(in oklch, var(--surface) 88%, var(--mint));
     }
 
     .hero {
@@ -132,7 +131,7 @@
       border: 1px solid color-mix(in oklch, var(--line), var(--gold) 22%);
       border-radius: var(--radius);
       background: color-mix(in oklch, var(--surface) 88%, var(--gold));
-      box-shadow: 0 24px 70px oklch(8% 0.02 250 / 42%);
+      box-shadow: 0 22px 52px oklch(54% 0.04 250 / 16%);
       padding: var(--space-xl);
       display: grid;
       gap: var(--space-lg);
@@ -157,7 +156,7 @@
       min-height: 104px;
       border: 1px solid color-mix(in oklch, var(--line), var(--gold) 18%);
       border-radius: var(--radius);
-      background: oklch(17% 0.02 250 / 72%);
+      background: oklch(99% 0.004 250 / 92%);
       padding: var(--space-lg);
       display: grid;
       gap: var(--space-sm);
@@ -189,8 +188,8 @@
     .caveat {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: color-mix(in oklch, var(--surface) 92%, var(--bg));
-      box-shadow: 0 18px 46px oklch(9% 0.025 250 / 24%);
+      background: color-mix(in oklch, var(--surface) 96%, var(--bg));
+      box-shadow: 0 14px 36px oklch(54% 0.04 250 / 12%);
     }
 
     .panel {
@@ -245,7 +244,7 @@
       border: 1px solid color-mix(in oklch, var(--line), var(--surface-3) 50%);
       border-radius: var(--radius);
       padding: var(--space-md);
-      background: oklch(16% 0.018 250 / 58%);
+      background: oklch(99% 0.006 250 / 86%);
     }
 
     .cluster-row strong {
@@ -263,7 +262,7 @@
 
     .tag {
       border-radius: 999px;
-      background: var(--surface-3);
+      background: color-mix(in oklch, var(--surface-3) 72%, var(--surface));
       color: var(--muted);
       padding: 3px 8px;
       font-size: 0.74rem;
@@ -289,31 +288,45 @@
     }
 
     .network-edge {
-      stroke: oklch(59% 0.052 246 / 70%);
+      stroke: oklch(39% 0.13 244 / 90%);
       stroke-linecap: round;
+      filter: drop-shadow(0 1px 1px oklch(100% 0 0 / 92%));
     }
 
     .network-label {
-      fill: var(--soft);
+      fill: oklch(27% 0.055 250);
       font-size: 11px;
-      font-weight: 750;
+      font-weight: 900;
+      paint-order: stroke;
+      stroke: oklch(100% 0 0 / 94%);
+      stroke-width: 4px;
+      stroke-linejoin: round;
     }
 
     .network-node {
-      stroke: oklch(94% 0.014 86 / 76%);
-      stroke-width: 1.5;
+      stroke: oklch(100% 0 0 / 96%);
+      stroke-width: 3;
+      filter: drop-shadow(0 8px 14px oklch(52% 0.04 250 / 18%));
     }
 
     .network-name {
-      fill: var(--text);
+      fill: oklch(18% 0.03 250);
       font-size: 12px;
       font-weight: 900;
+      paint-order: stroke;
+      stroke: oklch(100% 0 0 / 86%);
+      stroke-width: 3px;
+      stroke-linejoin: round;
     }
 
     .network-meta {
-      fill: var(--muted);
+      fill: oklch(27% 0.035 250);
       font-size: 10px;
-      font-weight: 750;
+      font-weight: 850;
+      paint-order: stroke;
+      stroke: oklch(100% 0 0 / 82%);
+      stroke-width: 3px;
+      stroke-linejoin: round;
     }
 
     .platform-grid {
@@ -350,7 +363,7 @@
     .score-bar {
       height: 8px;
       border-radius: 999px;
-      background: var(--surface-3);
+      background: color-mix(in oklch, var(--surface-3) 74%, var(--surface));
       overflow: hidden;
     }
 
@@ -416,7 +429,7 @@
       display: none;
       border: 1px solid color-mix(in oklch, var(--line), var(--rose) 42%);
       border-radius: var(--radius);
-      background: color-mix(in oklch, var(--surface-2) 84%, var(--rose));
+      background: color-mix(in oklch, var(--surface) 86%, var(--rose));
       padding: var(--space-lg);
       color: var(--text);
     }
@@ -634,9 +647,9 @@
     };
 
     const numberFormatter = new Intl.NumberFormat("ko-KR");
-    const chartTextColor = "oklch(82% 0.025 245)";
-    const chartGridColor = "oklch(39% 0.04 250 / 42%)";
-    const nodeColors = ["oklch(76% 0.13 165)", "oklch(80% 0.13 84)", "oklch(70% 0.16 24)", "oklch(70% 0.13 302)", "oklch(72% 0.12 228)", "oklch(73% 0.12 55)", "oklch(68% 0.1 200)"];
+    const chartTextColor = "oklch(36% 0.034 250)";
+    const chartGridColor = "oklch(86% 0.018 250 / 82%)";
+    const nodeColors = ["oklch(64% 0.16 164)", "oklch(72% 0.15 78)", "oklch(65% 0.18 26)", "oklch(64% 0.16 302)", "oklch(67% 0.15 236)", "oklch(69% 0.15 55)", "oklch(63% 0.13 200)"];
 
     function setText(id, value) {
       document.getElementById(id).textContent = value;
@@ -668,8 +681,8 @@
             {
               label: "점유율",
               data: clusters.map((cluster) => cluster.share),
-              backgroundColor: "oklch(76% 0.13 165 / 86%)",
-              borderColor: "oklch(80% 0.13 165)",
+              backgroundColor: "oklch(61% 0.14 165 / 82%)",
+              borderColor: "oklch(49% 0.14 165)",
               borderWidth: 1,
               borderRadius: 6,
               yAxisID: "y"
@@ -678,10 +691,10 @@
               label: "전월 대비 성장률",
               data: clusters.map((cluster) => cluster.growth),
               type: "line",
-              borderColor: "oklch(80% 0.13 84)",
-              backgroundColor: "oklch(80% 0.13 84 / 18%)",
-              pointBackgroundColor: "oklch(70% 0.16 24)",
-              pointBorderColor: "oklch(14% 0.018 250)",
+              borderColor: "oklch(58% 0.15 78)",
+              backgroundColor: "oklch(72% 0.13 84 / 18%)",
+              pointBackgroundColor: "oklch(58% 0.18 24)",
+              pointBorderColor: "oklch(100% 0 0)",
               borderWidth: 3,
               tension: 0.32,
               yAxisID: "y1"
@@ -742,7 +755,7 @@
         const midX = (source.x + target.x) / 2;
         const midY = (source.y + target.y) / 2;
         return `
-          <line class="network-edge" x1="${source.x}" y1="${source.y}" x2="${target.x}" y2="${target.y}" stroke-width="${Math.max(2, edge.strength / 18)}"></line>
+          <line class="network-edge" x1="${source.x}" y1="${source.y}" x2="${target.x}" y2="${target.y}" stroke-width="${Math.max(5, edge.strength / 11)}"></line>
           <text class="network-label" x="${midX}" y="${midY - 6}" text-anchor="middle">${edge.label}</text>
         `;
       }).join("");
@@ -755,7 +768,7 @@
         </g>
       `).join("");
 
-      svg.innerHTML = `<rect x="1" y="1" width="978" height="458" rx="8" fill="oklch(15% 0.018 250 / 45%)"></rect>${edges}${nodes}`;
+      svg.innerHTML = `<rect x="1" y="1" width="978" height="458" rx="8" fill="oklch(98% 0.006 250)"></rect>${edges}${nodes}`;
     }
 
     function renderPlatforms(platforms) {
