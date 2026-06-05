@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "title": "Tingle + Crack 캐릭터 플랫폼 리서치",
+    "snapshotDate": "2026-06-05",
+    "sampleWindow": "2026년 5월 관찰 샘플",
+    "sampleSize": 1840,
+    "sourceNote": "공개 캐릭터 상세, 소개문, 태그, 상위 노출 슬롯, 수동 코딩 표본을 가정한 운영용 시드 데이터"
+  },
+  "clusters": [
+    {
+      "id": "school-romance",
+      "name": "학원 로맨스·동급생 긴장",
+      "share": 23,
+      "growth": 14,
+      "platformTilt": "Crack",
+      "signals": ["반장/전학생/소꿉친구", "비밀 연애", "문단속·방과후 장면"],
+      "themes": ["일상 밀착", "질투", "금지된 접근"],
+      "risk": "높은 반복성으로 캐릭터 간 차별화가 약해질 수 있음"
+    },
+    {
+      "id": "obsessive-protector",
+      "name": "집착 보호자·위험한 헌신",
+      "share": 18,
+      "growth": 21,
+      "platformTilt": "Crack",
+      "signals": ["보디가드", "감시", "너만 지킨다"],
+      "themes": ["소유욕", "구원 서사", "경계 침범"],
+      "risk": "안전장치와 트리거 경고 문구가 필요함"
+    },
+    {
+      "id": "celebrity-idol",
+      "name": "연예계·아이돌 비공개 관계",
+      "share": 15,
+      "growth": 12,
+      "platformTilt": "Tingle",
+      "signals": ["스케줄 후 대기실", "팬과 스타", "비밀 계약"],
+      "themes": ["동경", "공개/비공개 정체성", "권력 거리"],
+      "risk": "현실 인물 연상 및 초상권 오해를 피해야 함"
+    },
+    {
+      "id": "fantasy-contract",
+      "name": "판타지 계약·초월자 동거",
+      "share": 14,
+      "growth": 17,
+      "platformTilt": "Tingle",
+      "signals": ["악마/용/신수", "계약 조건", "이세계 귀환"],
+      "themes": ["운명", "능력 비대칭", "장기 세계관"],
+      "risk": "세계관 설명이 길어지면 첫 대화 진입 장벽이 커짐"
+    },
+    {
+      "id": "healing-slice",
+      "name": "힐링 일상·감정 회복",
+      "share": 12,
+      "growth": 9,
+      "platformTilt": "Tingle",
+      "signals": ["카페/병원/집", "상담", "느린 관계"],
+      "themes": ["돌봄", "상처 회복", "루틴"],
+      "risk": "갈등 밀도가 낮으면 재방문 동기가 약해짐"
+    },
+    {
+      "id": "workplace-power",
+      "name": "직장 권력관계·계약 파트너",
+      "share": 10,
+      "growth": 8,
+      "platformTilt": "Crack",
+      "signals": ["상사/비서", "계약 결혼", "인수합병"],
+      "themes": ["협상", "비밀 유지", "위계 긴장"],
+      "risk": "현실 직장 괴롭힘처럼 읽히지 않도록 톤 조절 필요"
+    },
+    {
+      "id": "survival-mystery",
+      "name": "서바이벌·미스터리 동행",
+      "share": 8,
+      "growth": 19,
+      "platformTilt": "Neutral",
+      "signals": ["폐쇄 공간", "추리", "동맹 배신"],
+      "themes": ["생존", "정보 비대칭", "선택 결과"],
+      "risk": "운영자가 분기 기록과 요약 메모를 관리해야 함"
+    }
+  ],
+  "network": [
+    { "source": "school-romance", "target": "obsessive-protector", "strength": 76, "label": "질투·소유욕" },
+    { "source": "school-romance", "target": "healing-slice", "strength": 58, "label": "일상 루틴" },
+    { "source": "obsessive-protector", "target": "workplace-power", "strength": 64, "label": "권력 비대칭" },
+    { "source": "celebrity-idol", "target": "workplace-power", "strength": 51, "label": "계약·공개 리스크" },
+    { "source": "celebrity-idol", "target": "healing-slice", "strength": 42, "label": "사적 안식처" },
+    { "source": "fantasy-contract", "target": "obsessive-protector", "strength": 69, "label": "초월적 보호" },
+    { "source": "fantasy-contract", "target": "survival-mystery", "strength": 57, "label": "세계관 미션" },
+    { "source": "survival-mystery", "target": "workplace-power", "strength": 38, "label": "협상·배신" }
+  ],
+  "platforms": [
+    {
+      "name": "Tingle",
+      "positioning": "감정 몰입형 캐릭터 탐색과 부드러운 관계 축적에 강점",
+      "advantages": ["카테고리형 발견 UX", "장기 관계·힐링 서사 친화", "설정 설명이 긴 캐릭터도 수용"],
+      "watchpoints": ["상위 노출의 반복 테마 편중", "정량 지표 외 대화 품질 추적 필요"],
+      "scores": { "discovery": 82, "roleplayDepth": 88, "trendVelocity": 68, "opsTraceability": 61 }
+    },
+    {
+      "name": "Crack",
+      "positioning": "강한 훅, 자극적 첫 장면, 빠른 반응 지표 관찰에 강점",
+      "advantages": ["상세 페이지 지표 추출 가능", "짧은 소개문 기반 훅 평가 용이", "인기 캐릭터 급등락 포착"],
+      "watchpoints": ["고자극 설정의 안전 문구 관리", "지표 수집이 페이지 구조 변경에 취약"],
+      "scores": { "discovery": 74, "roleplayDepth": 79, "trendVelocity": 86, "opsTraceability": 76 }
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "1단계",
+      "name": "샘플 프레임 고정",
+      "period": "1주",
+      "tasks": ["상위 노출 슬롯 100개 기준 정의", "캐릭터 소개문·태그·지표 필드 목록 고정", "수동 코딩 기준표 작성"],
+      "output": "주간 리서치 코드북"
+    },
+    {
+      "phase": "2단계",
+      "name": "정기 수집 자동화",
+      "period": "2-3주",
+      "tasks": ["Crack 상세 지표 크롤링 안정화", "Tingle 공개 페이지 수집 가능 범위 검증", "실패 로그와 재시도 정책 추가"],
+      "output": "일별 CSV/JSON 스냅샷"
+    },
+    {
+      "phase": "3단계",
+      "name": "클러스터 분석",
+      "period": "4주",
+      "tasks": ["키워드 사전과 임베딩 기반 태그 병행", "테마·관계·위험 문구 라벨링", "플랫폼별 분포 비교"],
+      "output": "월간 클러스터 리포트"
+    },
+    {
+      "phase": "4단계",
+      "name": "운영 의사결정 연결",
+      "period": "상시",
+      "tasks": ["신규 캐릭터 기획 가설 등록", "상위 훅 A/B 기록", "안전·권리 리스크 리뷰 체크"],
+      "output": "캐릭터 기획 백로그"
+    }
+  ],
+  "caveats": [
+    "이 시드 데이터는 운영 화면과 분석 구조 검증을 위한 가상 표본이며 실제 플랫폼 전체를 대표하지 않는다.",
+    "공개 페이지에서 관찰되는 지표는 노출 알고리즘, 수집 시각, 캐시 상태에 따라 달라질 수 있다.",
+    "캐릭터 설정의 인기도는 단순 조회수보다 첫 메시지 완성도, 재방문율, 안전한 경계 설정과 함께 해석해야 한다.",
+    "민감한 관계 설정은 플랫폼 정책, 연령 제한, 권리 침해 가능성, 사용자 안전 문구를 우선 검토해야 한다.",
+    "Tingle과 Crack은 공개 데이터 접근성과 UI 구조가 다르므로 동일한 지표명이라도 직접 비교 전에 정규화가 필요하다."
+  ]
+}

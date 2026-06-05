@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tingle + Crack 캐릭터 플랫폼 리서치</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: oklch(14% 0.018 250);
+      --surface: oklch(19% 0.022 250);
+      --surface-2: oklch(24% 0.026 250);
+      --surface-3: oklch(29% 0.032 250);
+      --line: oklch(39% 0.04 250);
+      --text: oklch(93% 0.014 86);
+      --muted: oklch(74% 0.032 245);
+      --soft: oklch(61% 0.04 245);
+      --mint: oklch(76% 0.13 165);
+      --gold: oklch(80% 0.13 84);
+      --rose: oklch(70% 0.16 24);
+      --violet: oklch(70% 0.13 302);
+      --sky: oklch(72% 0.12 228);
+      --radius: 8px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 24px;
+      --space-2xl: 32px;
+      --space-3xl: 48px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(125deg, oklch(18% 0.04 260) 0%, transparent 42%),
+        linear-gradient(305deg, oklch(17% 0.035 24) 0%, transparent 36%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Pretendard", "SUIT", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(24px, 5vw, 56px) 0;
+      display: grid;
+      gap: var(--space-2xl);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-md);
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      justify-content: flex-end;
+    }
+
+    .nav-links a,
+    .source-pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      padding: 8px 12px;
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .source-pill {
+      color: var(--gold);
+      border-color: color-mix(in oklch, var(--line), var(--gold) 28%);
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover {
+      border-color: color-mix(in oklch, var(--line), var(--mint) 44%);
+      color: var(--text);
+      background: color-mix(in oklch, var(--surface-2) 78%, var(--mint));
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+      gap: clamp(24px, 5vw, 56px);
+      align-items: end;
+      padding: var(--space-2xl) 0 var(--space-md);
+    }
+
+    .eyebrow {
+      margin: 0 0 var(--space-md);
+      color: var(--mint);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 12ch;
+      font-size: clamp(2.7rem, 8vw, 6.6rem);
+      line-height: 0.94;
+      letter-spacing: 0;
+      font-weight: 950;
+    }
+
+    .subtitle {
+      max-width: 66ch;
+      margin: var(--space-xl) 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .briefing {
+      border: 1px solid color-mix(in oklch, var(--line), var(--gold) 22%);
+      border-radius: var(--radius);
+      background: color-mix(in oklch, var(--surface) 88%, var(--gold));
+      box-shadow: 0 24px 70px oklch(8% 0.02 250 / 42%);
+      padding: var(--space-xl);
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .briefing h2,
+    .panel h2,
+    .platform h3,
+    .phase h3 {
+      margin: 0;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    .brief-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+
+    .brief-metric {
+      min-height: 104px;
+      border: 1px solid color-mix(in oklch, var(--line), var(--gold) 18%);
+      border-radius: var(--radius);
+      background: oklch(17% 0.02 250 / 72%);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-sm);
+      align-content: space-between;
+    }
+
+    .brief-metric span,
+    .label,
+    .phase-label {
+      color: var(--soft);
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+
+    .brief-metric strong {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+      gap: var(--space-xl);
+    }
+
+    .panel,
+    .platform,
+    .phase,
+    .caveat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in oklch, var(--surface) 92%, var(--bg));
+      box-shadow: 0 18px 46px oklch(9% 0.025 250 / 24%);
+    }
+
+    .panel {
+      padding: var(--space-xl);
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: var(--space-lg);
+    }
+
+    .panel-head p,
+    .platform p,
+    .phase p,
+    .caveat,
+    .signal {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      border: 1px solid color-mix(in oklch, var(--line), var(--mint) 30%);
+      border-radius: 999px;
+      color: var(--mint);
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .chart-wrap {
+      position: relative;
+      min-height: 330px;
+    }
+
+    .cluster-list {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .cluster-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-md);
+      align-items: center;
+      border: 1px solid color-mix(in oklch, var(--line), var(--surface-3) 50%);
+      border-radius: var(--radius);
+      padding: var(--space-md);
+      background: oklch(16% 0.018 250 / 58%);
+    }
+
+    .cluster-row strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.96rem;
+    }
+
+    .tagline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-top: var(--space-sm);
+    }
+
+    .tag {
+      border-radius: 999px;
+      background: var(--surface-3);
+      color: var(--muted);
+      padding: 3px 8px;
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+
+    .share {
+      color: var(--gold);
+      font-weight: 950;
+      font-size: 1.25rem;
+      white-space: nowrap;
+    }
+
+    .network-box {
+      min-height: 520px;
+      overflow: hidden;
+    }
+
+    .network-svg {
+      width: 100%;
+      min-height: 420px;
+      display: block;
+    }
+
+    .network-edge {
+      stroke: oklch(59% 0.052 246 / 70%);
+      stroke-linecap: round;
+    }
+
+    .network-label {
+      fill: var(--soft);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .network-node {
+      stroke: oklch(94% 0.014 86 / 76%);
+      stroke-width: 1.5;
+    }
+
+    .network-name {
+      fill: var(--text);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .network-meta {
+      fill: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-xl);
+    }
+
+    .platform {
+      padding: var(--space-xl);
+      display: grid;
+      gap: var(--space-lg);
+      align-content: start;
+    }
+
+    .score-grid {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .score {
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    .score-top {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .score-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-3);
+      overflow: hidden;
+    }
+
+    .score-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--mint), var(--gold));
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-lg);
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    li + li {
+      margin-top: var(--space-xs);
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .phase {
+      min-height: 260px;
+      padding: var(--space-lg);
+      display: grid;
+      align-content: start;
+      gap: var(--space-md);
+    }
+
+    .phase h3 {
+      font-size: 1.05rem;
+    }
+
+    .phase-output {
+      color: var(--gold);
+      font-size: 0.86rem;
+      font-weight: 850;
+    }
+
+    .caveats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .caveat {
+      padding: var(--space-lg);
+    }
+
+    .notice {
+      display: none;
+      border: 1px solid color-mix(in oklch, var(--line), var(--rose) 42%);
+      border-radius: var(--radius);
+      background: color-mix(in oklch, var(--surface-2) 84%, var(--rose));
+      padding: var(--space-lg);
+      color: var(--text);
+    }
+
+    footer {
+      color: var(--soft);
+      font-size: 0.82rem;
+      text-align: right;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .layout,
+      .platform-grid,
+      .two-column,
+      .roadmap {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        max-width: 14ch;
+      }
+    }
+
+    @media (max-width: 620px) {
+      main {
+        width: min(100% - 24px, 1280px);
+      }
+
+      .top-nav,
+      .panel-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      .brief-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel,
+      .platform {
+        padding: var(--space-lg);
+      }
+
+      .network-box {
+        min-height: 440px;
+      }
+
+      .network-svg {
+        min-height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav class="top-nav" aria-label="페이지 이동">
+      <span class="source-pill" id="source-pill">리서치 데이터 로딩 중</span>
+      <div class="nav-links">
+        <a href="index.html">트래커 대시보드</a>
+        <a href="charts.html">차트 보기</a>
+      </div>
+    </nav>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">PUBLIC RESEARCH BRIEF</p>
+        <h1 id="page-title">Tingle + Crack 캐릭터 플랫폼 리서치</h1>
+        <p class="subtitle" id="subtitle">인기 캐릭터 설정, 내러티브 테마, 플랫폼 차이, 수집 운영 로드맵을 한 화면에서 검토하는 공개용 리서치 보드입니다.</p>
+      </div>
+      <aside class="briefing" aria-label="리서치 요약">
+        <h2>표본 요약</h2>
+        <div class="brief-grid">
+          <div class="brief-metric">
+            <span>관찰 표본</span>
+            <strong id="sample-size">-</strong>
+          </div>
+          <div class="brief-metric">
+            <span>클러스터</span>
+            <strong id="cluster-count">-</strong>
+          </div>
+          <div class="brief-metric">
+            <span>관계 엣지</span>
+            <strong id="edge-count">-</strong>
+          </div>
+          <div class="brief-metric">
+            <span>운영 단계</span>
+            <strong id="phase-count">-</strong>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="notice" id="notice" role="status"></div>
+
+    <section class="layout" aria-label="클러스터 분석">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>인기 설정·내러티브 클러스터</h2>
+            <p>공개 캐릭터 소개문과 태그를 기준으로 묶은 테마 분포</p>
+          </div>
+          <span class="badge">점유율 + 성장률</span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="cluster-chart" aria-label="클러스터별 점유율과 성장률 차트"></canvas>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>클러스터 신호</h2>
+            <p>기획자가 빠르게 확인할 수 있는 대표 훅과 리스크</p>
+          </div>
+        </div>
+        <div class="cluster-list" id="cluster-list"></div>
+      </article>
+    </section>
+
+    <section class="panel network-box" aria-label="관계 네트워크">
+      <div class="panel-head">
+        <div>
+          <h2>클러스터 관계·네트워크 맵</h2>
+          <p>같이 등장하는 테마, 권력 구조, 관계 훅의 연결 강도를 시각화</p>
+        </div>
+        <span class="badge">강할수록 굵은 선</span>
+      </div>
+      <svg class="network-svg" id="network-map" viewBox="0 0 980 460" role="img" aria-label="캐릭터 설정 클러스터 관계망"></svg>
+    </section>
+
+    <section class="panel" aria-label="플랫폼 차이">
+      <div class="panel-head">
+        <div>
+          <h2>Tingle vs Crack 플랫폼 차이</h2>
+          <p>발견성, 롤플레이 깊이, 트렌드 속도, 운영 추적성을 비교</p>
+        </div>
+        <span class="badge">운영 관점</span>
+      </div>
+      <div class="platform-grid" id="platform-grid"></div>
+    </section>
+
+    <section class="panel" aria-label="데이터 수집 운영 로드맵">
+      <div class="panel-head">
+        <div>
+          <h2>데이터 수집·운영 로드맵</h2>
+          <p>공개 관찰에서 캐릭터 기획 백로그까지 이어지는 실행 순서</p>
+        </div>
+        <span class="badge">운영 계획</span>
+      </div>
+      <div class="roadmap" id="roadmap"></div>
+    </section>
+
+    <section class="panel" aria-label="리서치 주의사항">
+      <div class="panel-head">
+        <div>
+          <h2>리서치 해석 주의사항</h2>
+          <p>공개 데이터 기반 플랫폼 리서치에서 반드시 분리해서 봐야 할 한계</p>
+        </div>
+      </div>
+      <div class="caveats" id="caveats"></div>
+    </section>
+
+    <footer id="footer-note">data/research_seed.json</footer>
+  </main>
+
+  <script>
+    const fallbackData = {
+      meta: {
+        title: "Tingle + Crack 캐릭터 플랫폼 리서치",
+        snapshotDate: "2026-06-05",
+        sampleWindow: "파일 직접 열기용 내장 표본",
+        sampleSize: 1840,
+        sourceNote: "fetch 실패 시 사용하는 내장 시드 데이터"
+      },
+      clusters: [
+        { id: "school-romance", name: "학원 로맨스·동급생 긴장", share: 23, growth: 14, platformTilt: "Crack", signals: ["반장/전학생/소꿉친구", "비밀 연애", "방과후 장면"], themes: ["일상 밀착", "질투", "금지된 접근"], risk: "반복 설정의 차별화가 필요함" },
+        { id: "obsessive-protector", name: "집착 보호자·위험한 헌신", share: 18, growth: 21, platformTilt: "Crack", signals: ["보디가드", "감시", "너만 지킨다"], themes: ["소유욕", "구원 서사", "경계 침범"], risk: "안전장치와 트리거 경고 필요" },
+        { id: "celebrity-idol", name: "연예계·아이돌 비공개 관계", share: 15, growth: 12, platformTilt: "Tingle", signals: ["대기실", "팬과 스타", "비밀 계약"], themes: ["동경", "정체성", "권력 거리"], risk: "현실 인물 연상 방지 필요" },
+        { id: "fantasy-contract", name: "판타지 계약·초월자 동거", share: 14, growth: 17, platformTilt: "Tingle", signals: ["악마/용/신수", "계약 조건", "이세계"], themes: ["운명", "능력 비대칭", "장기 세계관"], risk: "첫 대화 진입 장벽 관리 필요" },
+        { id: "healing-slice", name: "힐링 일상·감정 회복", share: 12, growth: 9, platformTilt: "Tingle", signals: ["카페/병원/집", "상담", "느린 관계"], themes: ["돌봄", "회복", "루틴"], risk: "재방문 동기 설계 필요" },
+        { id: "workplace-power", name: "직장 권력관계·계약 파트너", share: 10, growth: 8, platformTilt: "Crack", signals: ["상사/비서", "계약 결혼", "인수합병"], themes: ["협상", "비밀 유지", "위계 긴장"], risk: "현실 괴롭힘처럼 읽히지 않게 조절" },
+        { id: "survival-mystery", name: "서바이벌·미스터리 동행", share: 8, growth: 19, platformTilt: "Neutral", signals: ["폐쇄 공간", "추리", "동맹 배신"], themes: ["생존", "정보 비대칭", "선택 결과"], risk: "분기 기록 관리 필요" }
+      ],
+      network: [
+        { source: "school-romance", target: "obsessive-protector", strength: 76, label: "질투·소유욕" },
+        { source: "school-romance", target: "healing-slice", strength: 58, label: "일상 루틴" },
+        { source: "obsessive-protector", target: "workplace-power", strength: 64, label: "권력 비대칭" },
+        { source: "celebrity-idol", target: "workplace-power", strength: 51, label: "계약·공개 리스크" },
+        { source: "celebrity-idol", target: "healing-slice", strength: 42, label: "사적 안식처" },
+        { source: "fantasy-contract", target: "obsessive-protector", strength: 69, label: "초월적 보호" },
+        { source: "fantasy-contract", target: "survival-mystery", strength: 57, label: "세계관 미션" },
+        { source: "survival-mystery", target: "workplace-power", strength: 38, label: "협상·배신" }
+      ],
+      platforms: [
+        { name: "Tingle", positioning: "감정 몰입형 캐릭터 탐색과 부드러운 관계 축적에 강점", advantages: ["카테고리형 발견 UX", "장기 관계·힐링 서사 친화", "긴 설정 설명 수용"], watchpoints: ["상위 노출 편중", "대화 품질 추적 필요"], scores: { discovery: 82, roleplayDepth: 88, trendVelocity: 68, opsTraceability: 61 } },
+        { name: "Crack", positioning: "강한 훅, 자극적 첫 장면, 빠른 반응 지표 관찰에 강점", advantages: ["상세 페이지 지표 추출 가능", "짧은 소개문 훅 평가", "급등락 포착"], watchpoints: ["안전 문구 관리", "페이지 구조 변경 취약"], scores: { discovery: 74, roleplayDepth: 79, trendVelocity: 86, opsTraceability: 76 } }
+      ],
+      roadmap: [
+        { phase: "1단계", name: "샘플 프레임 고정", period: "1주", tasks: ["상위 노출 슬롯 기준 정의", "필드 목록 고정", "수동 코딩 기준표 작성"], output: "주간 리서치 코드북" },
+        { phase: "2단계", name: "정기 수집 자동화", period: "2-3주", tasks: ["Crack 상세 지표 크롤링", "Tingle 공개 범위 검증", "재시도 정책 추가"], output: "일별 CSV/JSON 스냅샷" },
+        { phase: "3단계", name: "클러스터 분석", period: "4주", tasks: ["키워드 사전 구축", "테마 라벨링", "플랫폼별 분포 비교"], output: "월간 클러스터 리포트" },
+        { phase: "4단계", name: "운영 의사결정 연결", period: "상시", tasks: ["기획 가설 등록", "훅 A/B 기록", "안전 리스크 리뷰"], output: "캐릭터 기획 백로그" }
+      ],
+      caveats: [
+        "내장 데이터는 운영 화면 검증용 가상 표본이다.",
+        "공개 지표는 노출 알고리즘과 수집 시각에 따라 달라질 수 있다.",
+        "인기도는 조회수뿐 아니라 대화 품질과 재방문율로 해석해야 한다.",
+        "민감한 설정은 플랫폼 정책과 사용자 안전 문구를 우선 검토해야 한다."
+      ]
+    };
+
+    const numberFormatter = new Intl.NumberFormat("ko-KR");
+    const chartTextColor = "oklch(82% 0.025 245)";
+    const chartGridColor = "oklch(39% 0.04 250 / 42%)";
+    const nodeColors = ["oklch(76% 0.13 165)", "oklch(80% 0.13 84)", "oklch(70% 0.16 24)", "oklch(70% 0.13 302)", "oklch(72% 0.12 228)", "oklch(73% 0.12 55)", "oklch(68% 0.1 200)"];
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function showNotice(message) {
+      const notice = document.getElementById("notice");
+      notice.textContent = message;
+      notice.style.display = "block";
+    }
+
+    async function loadResearchData() {
+      try {
+        const response = await fetch("data/research_seed.json", { cache: "no-store" });
+        if (!response.ok) throw new Error("research_seed.json 응답 오류");
+        return { data: await response.json(), source: "json" };
+      } catch (error) {
+        showNotice("data/research_seed.json을 fetch로 불러오지 못해 내장 시드 데이터로 표시합니다. file://로 직접 열 때 정상적인 대체 동작입니다.");
+        return { data: fallbackData, source: "fallback" };
+      }
+    }
+
+    function buildClusterChart(clusters) {
+      new Chart(document.getElementById("cluster-chart"), {
+        type: "bar",
+        data: {
+          labels: clusters.map((cluster) => cluster.name),
+          datasets: [
+            {
+              label: "점유율",
+              data: clusters.map((cluster) => cluster.share),
+              backgroundColor: "oklch(76% 0.13 165 / 86%)",
+              borderColor: "oklch(80% 0.13 165)",
+              borderWidth: 1,
+              borderRadius: 6,
+              yAxisID: "y"
+            },
+            {
+              label: "전월 대비 성장률",
+              data: clusters.map((cluster) => cluster.growth),
+              type: "line",
+              borderColor: "oklch(80% 0.13 84)",
+              backgroundColor: "oklch(80% 0.13 84 / 18%)",
+              pointBackgroundColor: "oklch(70% 0.16 24)",
+              pointBorderColor: "oklch(14% 0.018 250)",
+              borderWidth: 3,
+              tension: 0.32,
+              yAxisID: "y1"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: chartTextColor, boxWidth: 12, boxHeight: 12 } },
+            tooltip: { callbacks: { label: (context) => ` ${context.dataset.label}: ${context.parsed.y}%` } }
+          },
+          scales: {
+            x: { ticks: { color: chartTextColor, maxRotation: 38, minRotation: 0 }, grid: { display: false } },
+            y: { beginAtZero: true, ticks: { color: chartTextColor, callback: (value) => `${value}%` }, grid: { color: chartGridColor } },
+            y1: { beginAtZero: true, position: "right", ticks: { color: chartTextColor, callback: (value) => `${value}%` }, grid: { drawOnChartArea: false } }
+          }
+        }
+      });
+    }
+
+    function renderClusters(clusters) {
+      const list = document.getElementById("cluster-list");
+      list.innerHTML = clusters.map((cluster) => `
+        <article class="cluster-row">
+          <div>
+            <strong>${cluster.name}</strong>
+            <p class="signal">${cluster.signals.join(" · ")}</p>
+            <div class="tagline">
+              <span class="tag">${cluster.platformTilt}</span>
+              ${cluster.themes.map((theme) => `<span class="tag">${theme}</span>`).join("")}
+            </div>
+          </div>
+          <span class="share">${cluster.share}%</span>
+        </article>
+      `).join("");
+    }
+
+    function renderNetwork(data) {
+      const svg = document.getElementById("network-map");
+      const clusters = data.clusters;
+      const map = new Map(clusters.map((cluster, index) => {
+        const angle = (Math.PI * 2 * index / clusters.length) - Math.PI / 2;
+        const radiusX = 355;
+        const radiusY = 165;
+        return [cluster.id, {
+          ...cluster,
+          x: 490 + Math.cos(angle) * radiusX,
+          y: 230 + Math.sin(angle) * radiusY,
+          color: nodeColors[index % nodeColors.length]
+        }];
+      }));
+
+      const edges = data.network.map((edge) => {
+        const source = map.get(edge.source);
+        const target = map.get(edge.target);
+        const midX = (source.x + target.x) / 2;
+        const midY = (source.y + target.y) / 2;
+        return `
+          <line class="network-edge" x1="${source.x}" y1="${source.y}" x2="${target.x}" y2="${target.y}" stroke-width="${Math.max(2, edge.strength / 18)}"></line>
+          <text class="network-label" x="${midX}" y="${midY - 6}" text-anchor="middle">${edge.label}</text>
+        `;
+      }).join("");
+
+      const nodes = [...map.values()].map((node) => `
+        <g>
+          <circle class="network-node" cx="${node.x}" cy="${node.y}" r="${24 + node.share * 0.7}" fill="${node.color}"></circle>
+          <text class="network-name" x="${node.x}" y="${node.y + 4}" text-anchor="middle">${node.name.split("·")[0]}</text>
+          <text class="network-meta" x="${node.x}" y="${node.y + 20}" text-anchor="middle">${node.share}% · ${node.platformTilt}</text>
+        </g>
+      `).join("");
+
+      svg.innerHTML = `<rect x="1" y="1" width="978" height="458" rx="8" fill="oklch(15% 0.018 250 / 45%)"></rect>${edges}${nodes}`;
+    }
+
+    function renderPlatforms(platforms) {
+      const labels = {
+        discovery: "발견성",
+        roleplayDepth: "롤플레이 깊이",
+        trendVelocity: "트렌드 속도",
+        opsTraceability: "운영 추적성"
+      };
+
+      document.getElementById("platform-grid").innerHTML = platforms.map((platform) => `
+        <article class="platform">
+          <div>
+            <p class="label">플랫폼 포지션</p>
+            <h3>${platform.name}</h3>
+            <p>${platform.positioning}</p>
+          </div>
+          <div class="score-grid">
+            ${Object.entries(platform.scores).map(([key, value]) => `
+              <div class="score">
+                <div class="score-top"><span>${labels[key]}</span><span>${value}</span></div>
+                <div class="score-bar"><span class="score-fill" style="width: ${value}%"></span></div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="two-column">
+            <div>
+              <p class="label">강점</p>
+              <ul>${platform.advantages.map((item) => `<li>${item}</li>`).join("")}</ul>
+            </div>
+            <div>
+              <p class="label">주의점</p>
+              <ul>${platform.watchpoints.map((item) => `<li>${item}</li>`).join("")}</ul>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderRoadmap(roadmap) {
+      document.getElementById("roadmap").innerHTML = roadmap.map((phase) => `
+        <article class="phase">
+          <p class="phase-label">${phase.phase} · ${phase.period}</p>
+          <h3>${phase.name}</h3>
+          <ul>${phase.tasks.map((task) => `<li>${task}</li>`).join("")}</ul>
+          <p class="phase-output">${phase.output}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderCaveats(caveats) {
+      document.getElementById("caveats").innerHTML = caveats.map((caveat) => `<p class="caveat">${caveat}</p>`).join("");
+    }
+
+    function renderSummary(data, source) {
+      document.title = data.meta.title;
+      setText("page-title", data.meta.title);
+      setText("source-pill", source === "json" ? `JSON 로드 · ${data.meta.snapshotDate}` : "내장 데이터 표시");
+      setText("subtitle", `${data.meta.sampleWindow} · ${data.meta.sourceNote}`);
+      setText("sample-size", numberFormatter.format(data.meta.sampleSize));
+      setText("cluster-count", `${data.clusters.length}개`);
+      setText("edge-count", `${data.network.length}개`);
+      setText("phase-count", `${data.roadmap.length}단계`);
+      setText("footer-note", `스냅샷 기준일: ${data.meta.snapshotDate} · ${source === "json" ? "data/research_seed.json" : "fallbackData"}`);
+    }
+
+    async function init() {
+      const { data, source } = await loadResearchData();
+      renderSummary(data, source);
+      renderClusters(data.clusters);
+      renderNetwork(data);
+      renderPlatforms(data.platforms);
+      renderRoadmap(data.roadmap);
+      renderCaveats(data.caveats);
+      buildClusterChart(data.clusters);
+    }
+
+    init();
+  </script>
+</body>
+</html>

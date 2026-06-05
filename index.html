@@ -54,6 +54,28 @@
       gap: var(--space-2xl);
     }
 
+    .top-nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+    }
+
+    .top-nav a {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      padding: 8px 12px;
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .top-nav a:hover {
+      border-color: color-mix(in oklch, var(--line), var(--teal) 42%);
+      color: var(--text);
+      background: color-mix(in oklch, var(--surface-2) 78%, var(--teal));
+    }
+
     .hero {
       display: grid;
       grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
@@ -261,6 +283,10 @@
 </head>
 <body>
   <main>
+    <nav class="top-nav" aria-label="페이지 이동">
+      <a href="research.html">Tingle + Crack 리서치</a>
+    </nav>
+
     <section class="hero" aria-labelledby="page-title">
       <div>
         <p class="eyebrow">CRACK 캐릭터 추적</p>
